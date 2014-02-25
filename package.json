@@ -1,0 +1,19 @@
+{
+  "name": "moareco",
+  "version": "0.0.0",
+  "description": "wmoai's record server",
+  "main": "app.js",
+  "dependencies": {
+    "cron": "~1.0.3",
+    "express": "~3.4.8",
+    "mongoose": "~3.8.8",
+    "jade": "~1.1.5",
+    "time": "~0.10.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "wmoai",
+  "license": "MIT"
+}

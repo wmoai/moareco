@@ -1,0 +1,58 @@
+h1 {
+}
+
+a,
+a:hover,
+a:visited,
+a:link,
+a:active {
+  text-decoration: none;
+  color: black;
+}
+
+#container {
+  display: -webkit-box;
+  border: 1px solid gray;
+  background-color: whitesmoke;
+  overflow: hidden;
+}
+.hour div {
+  box-sizing: border-box;
+  width: 40px;
+  font-size: 15px;
+  background-color: darkgrey;
+  border-top: 1px dotted white;
+  text-align: center;
+}
+.channel {
+  width: 200px;
+  margin-right: 2px;
+  position: relative;
+}
+.channel .program {
+  display: block;
+  box-sizing: border-box;
+  width:100%;
+  min-height:50px;
+  background-color:mistyrose;
+  border: 3px solid lightpink;
+  -webkit-border-radius: 10px;
+  position: absolute;
+  overflow: hidden;
+}
+.channel .program:hover {
+  border-color: lightcoral;
+}
+.channel .program div {
+  margin: 5px 10px;
+  word-break: break-all;
+  font-size: 12px;
+  line-height: 16px;
+}
+.channel .program .title {
+  font-family: bold;
+}
+.channel .program .detail {
+  margin-top: 10px;
+  color: dimgray;
+}
