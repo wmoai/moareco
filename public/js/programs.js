@@ -1,6 +1,6 @@
 $(function() {
   var pxph = 4;
-  var duration = 6;
+  var dHour = 6;
   var utime = 1390644100000;
   utime = utime - (utime % (3600 * 1000));
   var date = new Date(utime);
@@ -9,14 +9,14 @@ $(function() {
     url: '/programs',
     data: {
       start : utime,
-      end : duration * 3600 * 1000 + utime
+      end : dHour * 3600 * 1000 + utime
     }
   }).done(function(data, textStatus, jqXHR) {
     for (var i=0; i<data.length; i++) {
       // console.log(data[i].duration / 60);
       // console.log((data[i].start - utime) / 30000);
       var css = {
-        'height': data[i].duration / 60 * pxph,
+        'height': data[i].duration / (60 * 1000) * pxph,
         'top': (data[i].start - utime) / (60 * 1000) * pxph,
         'z-index': i
       };
@@ -37,8 +37,9 @@ $(function() {
     $(this).css({'z-index': $(this).data('count')});
   });
 
+  // time bar
   var baseHour = date.getHours();
-  for (var i=0; i<duration; i++) {
+  for (var i=0; i<dHour; i++) {
     var hour = (baseHour + i) % 24;
     $('<div>')
     .html(hour)
