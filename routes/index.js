@@ -1,7 +1,10 @@
 var model = require('../model');
 
 exports.index = function(req, res) {
-  res.render('programs', { index: 'title'});
+  var Service = model.service;
+  Service.find({}, function(err, docs) {
+    res.render('programs', { services: docs});
+  });
 };
 
 exports.program = function(req, res){
@@ -28,6 +31,7 @@ exports.programs = function(req, res) {
   var Program = model.program;
   Program
   .find({
+    sid: req.query.sid,
     end: {
       '$gt' : parseInt(req.query.start),
       '$lt' : parseInt(req.query.end)

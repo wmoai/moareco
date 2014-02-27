@@ -16,8 +16,7 @@ app.configure(function(){
 app.listen(3000);
 
 app.get('/', routes.index);
-app.get('/programs', routes.programs);
 app.get('/program/:id', routes.program);
 app.post('/program/reserve/:id', routes.reserve);
-
-
+// ajax
+app.get('/programs', routes.programs);

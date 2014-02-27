@@ -14,7 +14,7 @@ a:active {
   display: -webkit-box;
   border: 1px solid gray;
   background-color: whitesmoke;
-  overflow: hidden;
+  overflow-y: hidden;
 }
 .hour div {
   box-sizing: border-box;

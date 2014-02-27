@@ -9,5 +9,6 @@ html
     h1 programs
     #container
       .hour
-      .channel
+      for service, index in services
+        .channel(data-sid='#{service.id}')
 

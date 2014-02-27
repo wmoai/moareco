@@ -3,7 +3,7 @@ var cronJob = require('cron').CronJob
   , model = require('./model')
 ;
 
-mongoose.connect('mongodb://localhost/moareco');
+// mongoose.connect('mongodb://localhost/moareco');
 
 var Program = model.program;
 
@@ -11,16 +11,16 @@ var checkReserveJob = new cronJob({
   // cronTime: "0 */30 * * * *"
   cronTime: "*/5 * * * * *",
   onTick: function() {
-    Program
-    .find({reserved:true, start:{'$lt':1390644010000}}, function(err, docs) {
-      console.log(docs);
-    });
+    // Program
+    // .find({reserved:true, start:{'$lt':1390644010000}}, function(err, docs) {
+      // console.log(docs);
+    // });
   },
   onComplete: function() {
 
   },
   start: true,
-  timeZone: "Japan/Tokyo"
+  timeZone: "Asia/Tokyo"
 });
 
 
@@ -39,13 +39,13 @@ var updateEpgJob = new cronJob({
   // cronTime: "0 0 6 * * *"
   cronTime: "*/5 * * * * *",
   onTick: function() {
-    console.log(new Date().getTime());
+    console.log(new Date());
   },
   onComplete: function() {
 
   },
   start: true,
-  timeZone: "Japan/Tokyo"
+  timeZone: "Asia/Tokyo"
 });
 
 

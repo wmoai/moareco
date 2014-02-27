@@ -7,7 +7,13 @@ var fs = require('fs')
 mongoose.connect('mongodb://localhost/moareco');
 
 var chs = [
-  27
+  27,
+  25,
+  22,
+  21,
+  24,
+  23,
+  16
 ];
 
 function saveEpg(epg) {
@@ -29,13 +35,14 @@ function saveEpg(epg) {
     program.start = data.start / 10;
     program.end = data.end / 10;
     program.duration = data.duration * 1000;
-    program.categoryL = data.category[0].large.ja_JP;
-    program.categoryM = data.category[0].middle.ja_JP;
+    if (data.category.length > 0) {
+      program.categoryL = data.category[0].large.ja_JP;
+      program.categoryM = data.category[0].middle.ja_JP;
+    }
     program.save(function(err) {
       // if (err) { console.log(err); }
     });
   }
-  console.log("epg reloaded.");
 }
 
 var epgDumper = {
@@ -44,15 +51,26 @@ var epgDumper = {
     if (self.channels.length <= self.index) {
       return;
     }
-    // exec recpt1 here, and callback
-    // var cmd = 'echo ' + self.channels[self.index];
-    var cmd = 'cat epg.json';
-    exec(cmd, {timeout: 1000}, function(error, stdout, stderr) {
-      var epg = JSON.parse(stdout);
-      // console.log(epg[0]);
-      saveEpg(epg);
-      self.index++;
-      self._getEpg();
+    var ch = self.channels[self.index];
+    var tsName = 'tmp/tmp'+ch+'.ts';
+    var cmdRec = 'recpt1 --b25 --strip '+ch+' 20 '+tsName;
+    console.log("rec start "+ch);
+    exec(cmdRec, {timeout: 30000}, function(error, stdout, stderr) {
+      var epgName = 'tmp/tmp'+ch+'.json';
+      var cmdDump = 'epgdump json '+tsName+' '+epgName;
+      console.log("dump start "+ch);
+      exec(cmdDump, {timeout: 2000}, function(error, stdout, stderr) {
+        var cmdCat = 'cat '+epgName;
+        exec(cmdCat, {timeout: 2000}, function(error, stdout, stderr) {
+          var epg = JSON.parse(stdout);
+          saveEpg(epg);
+          self.index++;
+          self._getEpg();
+          console.log("end "+ch);
+          fs.unlink(tsName);
+          fs.unlink(epgName);
+        });
+      })
     });
   },
   get : function(channels) {
