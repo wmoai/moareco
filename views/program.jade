@@ -1,12 +1,10 @@
-doctype
-html
-  head
-    title= data.title
-    link(rel='stylesheet', href='css/programs.css')
-    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
-  body
-    h1= data.title
-    h2= data.detail
-    form(action="/program/reserve/#{data.eid}", method="post")
-      input(type="submit", value="録画予約")
+extends ./layout
 
+block title
+  title= data.title
+
+block content
+  h1= data.title
+  h2= data.detail
+  form(action="/program/reserve/#{data.eid}", method="post")
+    input(type="submit", value="録画予約")
