@@ -1,14 +1,14 @@
-doctype
-html
-  head
-    title= title
-    link(rel='stylesheet', href='css/programs.css')
-    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
-    script(src='js/programs.js')
-  body
-    h1 programs
-    #container
-      .hour
-      for service, index in services
-        .channel(data-sid='#{service.id}')
+extends ./layout
 
+block title
+  title= title
+
+block scripts
+  script(src='js/programs.js')
+
+block content
+  h1 programs
+  #container
+    .hour
+    for service, index in services
+      .channel(data-sid='#{service.id}')
