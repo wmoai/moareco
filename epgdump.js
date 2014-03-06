@@ -24,7 +24,7 @@ function saveEpg(epg, ch) {
 
   for(var i=0; i<programs.length; i++) {
     var data = programs[i];
-    var program = new model.program;
+    var program = {};
     program.sid = sid;
     program.phch = ch;
     program.eid = data.event_id;
@@ -37,8 +37,7 @@ function saveEpg(epg, ch) {
       program.categoryL = data.category[0].large.ja_JP;
       program.categoryM = data.category[0].middle.ja_JP;
     }
-    program.save(function(err) {
-      // if (err) { console.log(err); }
+    model.program.findOneAndUpdate({eid:program.eid}, program, {upsert:true}, function(err) {
     });
   }
 }
@@ -51,20 +50,25 @@ var epgDumper = {
     }
     var ch = self.channels[self.index];
     var tsName = 'tmp/tmp'+ch+'.ts';
-    var cmdRec = 'recpt1 --b25 --strip '+ch+' 20 '+tsName;
+    var cmdRec = 'recpt1 --b25 --strip '+ch+' 30 '+tsName;
     console.log("rec start "+ch);
-    exec(cmdRec, {timeout: 30000}, function(error, stdout, stderr) {
+    exec(cmdRec, {timeout: 90000}, function(error, stdout, stderr) {
       var epgName = 'tmp/tmp'+ch+'.json';
       var cmdDump = 'epgdump json '+tsName+' '+epgName;
       console.log("dump start "+ch);
       exec(cmdDump, {timeout: 2000}, function(error, stdout, stderr) {
         var cmdCat = 'cat '+epgName;
         exec(cmdCat, {timeout: 2000}, function(error, stdout, stderr) {
-          var epg = JSON.parse(stdout);
-          saveEpg(epg, ch);
+          try {
+            var epg = JSON.parse(stdout);
+            saveEpg(epg, ch);
+          } catch (e) {
+            console.log('parse err');
+            console.log(stdout);
+          }
+          console.log("end "+ch);
           self.index++;
           self._getEpg();
-          console.log("end "+ch);
           fs.unlink(tsName);
           fs.unlink(epgName);
         });

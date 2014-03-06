@@ -9,6 +9,8 @@ block scripts
 block content
   h1 programs
   #container
-    .hour
-    for service, index in services
-      .channel(data-sid='#{service.id}')
+    #programs
+      .hour
+      for service, index in services
+        .channel(data-sid='#{service.id}')
+    #timeline

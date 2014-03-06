@@ -3,18 +3,18 @@ var mongoose = require('mongoose')
   , ObjectId = Schema.ObjectId
 ;
 
-var Program = new Schema({
+var Reservation = new Schema({
   sid: Number,
   phch: Number,
-  eid: {type : Number, unique : true},
   title: String,
-  detail: String,
   start: Number,
   end : Number,
   duration : Number,
   categoryL : String,
   categoryM : String,
-  reserved : Boolean
+  continue : Boolean,
+  interval : Number
 });
 
-module.exports = mongoose.model('program', Program);
+module.exports = mongoose.model('reservation', Reservation);
+

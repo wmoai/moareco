@@ -1,0 +1,13 @@
+extends ./layout
+
+block title
+  title= title
+
+block scripts
+
+block content
+  h1 reserved
+  ul
+  for program, index in programs
+    li
+      a(href="/program/#{program.eid}")= program.title

@@ -1,4 +1,7 @@
-var model = require('../model');
+var model = require('../model')
+  , sync = require('synchronize')
+  , reserved = require('../model/reserved')
+;
 
 exports.index = function(req, res) {
   var Service = model.service;
@@ -18,10 +21,28 @@ exports.program = function(req, res){
 
 exports.reserve = function(req, res) {
   var eid = req.params.id;
-  var Program = model.program;
-  Program
-  .findOneAndUpdate({eid: eid}, {reserved: true}, function(err) {
-    res.redirect('/program/'+eid);
+  model.program
+  .findOne({eid: eid}, function(err, doc) {
+    var reservation = new model.reservation;
+    reservation.sid = doc.sid;
+    reservation.phch = doc.phch;
+    reservation.title = doc.title.replace(/[\s|#|＃|-].*$/, '');
+    reservation.start = doc.start;
+    reservation.end = doc.end;
+    reservation.duration = doc.duration;
+    reservation.categoryL = doc.categoryL;
+    reservation.categoryM = doc.categoryM;
+    reservation.continue = true;
+    reservation.interval = 1000*60*60*24*7;
+    reservation.save(function(err) {
+      res.redirect('/program/'+eid);
+    });
+  });
+}
+
+exports.reserved = function(req, res) {
+  reserved.getReserved(function(programs) {
+    res.render('reserved', { programs: programs });
   });
 }
 
@@ -32,13 +53,23 @@ exports.programs = function(req, res) {
   Program
   .find({
     sid: req.query.sid,
-    end: {
-      '$gt' : parseInt(req.query.start),
-      '$lt' : parseInt(req.query.end)
-    }
+    '$or': [
+      {
+        start: {
+          '$gte' : parseInt(req.query.start),
+          '$lt' : parseInt(req.query.end)
+        }
+      },
+      {
+        end: {
+          '$gte' : parseInt(req.query.start),
+          '$lt' : parseInt(req.query.end)
+        }
+      }
+    ]
   })
   .sort({start:1})
-  .limit(100)
+  .limit(1000)
   .exec(function(err, docs) {
     res.send(docs);
   });

@@ -11,11 +11,20 @@ a:active {
 }
 
 #container {
+}
+#programs {
   display: -webkit-box;
   border: 1px solid gray;
   background-color: whitesmoke;
   overflow-y: hidden;
 }
+#timeline {
+  height: 1px;
+  background-color: red;
+  z-index: 9998;
+  position: absolute;
+}
+
 .hour div {
   box-sizing: border-box;
   width: 40px;

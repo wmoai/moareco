@@ -8,7 +8,9 @@
     "express": "~3.4.8",
     "mongoose": "~3.8.8",
     "jade": "~1.1.5",
-    "time": "~0.10.0"
+    "time": "~0.10.0",
+    "moment": "~2.5.1",
+    "config": "~0.4.35"
   },
   "devDependencies": {},
   "scripts": {

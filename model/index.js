@@ -1,4 +1,7 @@
-var fs = require('fs');
+var fs = require('fs')
+  , mongoose = require('mongoose')
+;
+mongoose.connect('mongodb://localhost/moareco');
 
 fs.readdirSync(__dirname + '/models').forEach(function(filename) {
   if (/\.js$/.test(filename)) {
