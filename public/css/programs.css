@@ -9,8 +9,26 @@ a:active {
   text-decoration: none;
   color: black;
 }
+video {
+  width:90%;
+}
+
+#header {
+  display: -webkit-box;
+  position: fixed;
+  top: 10px;
+  z-index: 10000;
+  background-color: whitesmoke;
+}
+#header a {
+  display: block;
+  padding: 5px 10px;
+  margin: 5px 10px;
+  background-color: silver;
+}
 
 #container {
+  margin-top: 80px;
 }
 #programs {
   display: -webkit-box;
@@ -19,13 +37,13 @@ a:active {
   overflow-y: hidden;
 }
 #timeline {
-  height: 1px;
-  background-color: red;
+  height: 2px;
+  background-color: orange;
   z-index: 9998;
   position: absolute;
 }
 
-.hour div {
+#hour div {
   box-sizing: border-box;
   width: 40px;
   font-size: 15px;
@@ -43,14 +61,15 @@ a:active {
   box-sizing: border-box;
   width:100%;
   min-height:50px;
-  background-color:mistyrose;
-  border: 3px solid lightpink;
+  background-color: white;
+  border: 3px solid skyblue;
   -webkit-border-radius: 10px;
   position: absolute;
   overflow: hidden;
 }
 .channel .program:hover {
-  border-color: lightcoral;
+  background-color: aliceblue;
+  border-color: deepskyblue;
 }
 .channel .program div {
   margin: 5px 10px;
@@ -59,9 +78,34 @@ a:active {
   line-height: 16px;
 }
 .channel .program .title {
-  font-family: bold;
+  font-size: 13px;
 }
 .channel .program .detail {
   margin-top: 10px;
   color: dimgray;
+}
+
+#col2 {
+  display: -webkit-box;
+  margin-bottom: 40px;
+}
+
+#list a {
+  display: block;
+  width: 400px;
+  margin :2px 5px;
+  padding: 5px 10px;
+  border: 3px solid skyblue;
+  -webkit-border-radius: 10px;
+}
+#list a:hover {
+  background-color: aliceblue;
+  border-color: deepskyblue;
+}
+#list a .title {
+  font-weight: bold;
+}
+
+#remark {
+  margin-left: 30px;
 }

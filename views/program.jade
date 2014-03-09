@@ -4,8 +4,9 @@ block title
   title= data.title
 
 block content
-  h1= data.title
-  h2= data.detail
-  h3= data.start
-  form(action="/program/reserve/#{data.eid}", method="post")
-    input(type="submit", value="録画予約")
+  #container
+    h1= data.title
+    h2= data.date
+    h3= data.detail
+    form(action="/program/reserve/#{data.eid}", method="post")
+      input(type="submit", value="録画予約")

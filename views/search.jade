@@ -1,0 +1,12 @@
+extends ./layout
+
+block title
+  title search
+
+block content
+  #container
+    #list
+      h1 searched
+      for program, index in programs
+        include ./programRow.jade
+    

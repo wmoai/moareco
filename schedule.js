@@ -1,9 +1,9 @@
 var cronJob = require('cron').CronJob
-  , mongoose = require('mongoose')
   , model = require('./model')
   , exec = require('child_process').exec
   , epgdump = require('./epgdump')
   , reserved = require('./model/reserved')
+  , moment = require('moment')
 ;
 
 var Program = model.program;
@@ -11,9 +11,9 @@ var tunerNum = 2;
 var reservedPrograms = [];
 
 var checkReserveJob = new cronJob({
-  // cronTime: "0 */30 * * * *"
-  cronTime: "0 * * * * *",
+  cronTime: "0 */3 * * * *",
   onTick: function() {
+    console.log('check reservation');
     reserved.getNearestReserved(function(docs) {
       for(var i=0; i<docs.length; i++) {
         var program = docs[i];
@@ -21,8 +21,6 @@ var checkReserveJob = new cronJob({
           // reserve program
           console.log('reserve '+program.eid);
           reservedPrograms[program.eid] = new ReserveJob(program);
-        } else {
-          console.log('already');
         }
       }
     });
@@ -36,18 +34,31 @@ var checkReserveJob = new cronJob({
 
 // start recording
 var ReserveJob = function(program) {
-  this.program = program;
   this.job = new cronJob({
     cronTime: new Date(program.start),
     onTick: function() {
       // record start
-      console.log(program.eid);
-      var tsName = '/mnt/data/samba/movie/'+program.eid+'.ts';
+      var tsName = __dirname
+                   + '/public/movie/'
+                   + moment().format('YYYYMM/')
+                   + program.eid+'.ts';
       var duration = program.duration / 1000;
       var cmdRec = 'recpt1 --b25 --strip '+program.phch+' '+duration+' '+tsName;
       console.log('start recording :'+cmdRec);
       exec(cmdRec, {timeout: program.duration+60000}, function(error, stdout, stderr) {
         console.log('end recording '+program.eid);
+      });
+      var movie = new model.movie;
+      movie.sid = program.sid;
+      movie.phch = program.phch;
+      movie.eid = program.eid;
+      movie.title = program.title;
+      movie.detail = program.detail;
+      movie.duration = program.duration;
+      movie.categoryL = program.categoryL;
+      movie.categoryM = program.categoryM;
+      movie.ts = tsName;
+      movie.save(function(err) {
       });
     },
     onComplete: function() {

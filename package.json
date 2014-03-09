@@ -10,7 +10,8 @@
     "jade": "~1.1.5",
     "time": "~0.10.0",
     "moment": "~2.5.1",
-    "config": "~0.4.35"
+    "config": "~0.4.35",
+    "synchronize": "~0.7.0"
   },
   "devDependencies": {},
   "scripts": {

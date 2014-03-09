@@ -3,11 +3,16 @@ extends ./layout
 block title
   title= title
 
-block scripts
-
 block content
-  h1 reserved
-  ul
-  for program, index in programs
-    li
-      a(href="/program/#{program.eid}")= program.title
+  #container
+    #col2
+      #list
+        h1 reserved
+        for program, index in programs
+          include ./programRow.jade
+      #remark
+        h1 pattern
+        for reservation, index in reservations
+          form(method="POST",action="/reserved/delete/#{reservation._id}")
+            = reservation.title
+            input(type="submit",value="x")

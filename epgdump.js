@@ -1,7 +1,9 @@
 var fs = require('fs')
   , exec = require('child_process').exec
   , model = require('./model')
+  , moment = require('moment')
 ;
+moment.lang('ja');
 
 var chs = [
   27,
@@ -37,6 +39,8 @@ function saveEpg(epg, ch) {
       program.categoryL = data.category[0].large.ja_JP;
       program.categoryM = data.category[0].middle.ja_JP;
     }
+    program.date = moment(program.start).format('YYYY/MM/DD (ddd) HH:mm:ss - ')
+                   + moment(program.end).format('HH:mm:ss');
     model.program.findOneAndUpdate({eid:program.eid}, program, {upsert:true}, function(err) {
     });
   }
@@ -84,6 +88,10 @@ var epgDumper = {
 
 module.exports = function() {
   console.log('start epgdump');
+  model.program
+  .remove({end : {'$lt' : moment().subtract('hours', 6).valueOf() }})
+  .exec(function (err) {
+  });
   epgDumper.get(chs);
 };
 

@@ -4,13 +4,12 @@ block title
   title= title
 
 block scripts
-  script(src='js/programs.js')
+  script(src='/js/programs.js')
 
 block content
-  h1 programs
   #container
     #programs
-      .hour
+      #hour
       for service, index in services
         .channel(data-sid='#{service.id}')
     #timeline

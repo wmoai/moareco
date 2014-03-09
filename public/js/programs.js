@@ -54,7 +54,7 @@ $(function() {
       $('<div>', {'data-utime':startUTime+(i*3600*1000)})
       .html(hour)
       .height(60 * pxpm)
-      .appendTo('.hour');
+      .appendTo('#hour');
     }
   }
   loadPrograms(baseDate.getTime());
@@ -62,7 +62,7 @@ $(function() {
   // scroll
   $(document).on('scroll', function() {
     var scroll = $(window).scrollTop()+$(window).height();
-    var lastHour = $('.hour > div:last-child');
+    var lastHour = $('#hour > div:last-child');
     if (scroll > lastHour.position().top) {
       loadPrograms(lastHour.data('utime') + (3600*1000));
     }
@@ -80,7 +80,7 @@ $(function() {
   var setNow = function() {
     var now = new Date().getTime();
     $('#timeline').css({
-      top: (now - baseDate.getTime())/60000*pxpm + $('#container').position().top ,
+      top: (now - baseDate.getTime())/60000*pxpm + $('#programs').position().top ,
       width: $('#programs').width()
     });
   }
