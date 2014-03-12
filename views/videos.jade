@@ -1,0 +1,12 @@
+extends ./layout
+
+block title
+  title videos
+
+block content
+  #container
+    #list
+      h1 video
+      for video, index in videos
+        a(href="/video/#{video.month}/#{video.eid}.mp4", target="_blank")
+          .title= video.title

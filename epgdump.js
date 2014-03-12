@@ -53,6 +53,7 @@ var epgDumper = {
       return;
     }
     var ch = self.channels[self.index];
+    self.index++;
     var tsName = 'tmp/tmp'+ch+'.ts';
     var cmdRec = 'recpt1 --b25 --strip '+ch+' 30 '+tsName;
     console.log("rec start "+ch);
@@ -71,7 +72,6 @@ var epgDumper = {
             console.log(stdout);
           }
           console.log("end "+ch);
-          self.index++;
           self._getEpg();
           fs.unlink(tsName);
           fs.unlink(epgName);
@@ -87,7 +87,7 @@ var epgDumper = {
 }
 
 module.exports = function() {
-  console.log('start epgdump');
+  console.log('start epgdump : ' + new Date());
   model.program
   .remove({end : {'$lt' : moment().subtract('hours', 6).valueOf() }})
   .exec(function (err) {

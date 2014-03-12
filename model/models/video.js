@@ -3,7 +3,7 @@ var mongoose = require('mongoose')
   , ObjectId = Schema.ObjectId
 ;
 
-var Movie = new Schema({
+var Video = new Schema({
   sid: Number,
   phch: Number,
   eid: {type : Number, unique : true},
@@ -12,9 +12,9 @@ var Movie = new Schema({
   duration : Number,
   categoryL : String,
   categoryM : String,
-  ts : String,
-  mp4 : String,
-  encoded : Boolean
+  month : String,
+  encoded : Boolean,
+  notfound : Boolean
 });
 
-module.exports = mongoose.model('movie', Movie);
+module.exports = mongoose.model('video', Video);

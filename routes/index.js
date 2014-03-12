@@ -1,17 +1,24 @@
 var model = require('../model')
-  , sync = require('synchronize')
-  , reserved = require('../model/reserved')
+  , reservation = require('../model/reservation')
+  , program = require('../model/program')
+  , video = require('../model/video')
 ;
 
 exports.index = function(req, res) {
   model.service
-  .find({}, function(err, docs) {
-    res.render('programs', { services: docs});
+  .find({}, function(err, services) {
+    res.render('programs', { services: services});
   });
 }
 
 exports.movie = function(req, res) {
   res.render('movie');
+}
+
+exports.videos = function(req, res) {
+  video.getEncodedList(function(err, videos) {
+    res.render('videos', { videos: videos});
+  });
 }
 
 exports.program = function(req, res){
@@ -23,48 +30,23 @@ exports.program = function(req, res){
 }
 
 exports.search = function(req, res) {
-  var regexp = new RegExp(req.params.word.replace(/^\s+|\s+$/g,'').replace(/\s+/g,'|'));
-  model.program
-  .find({
-    '$or':[
-      {'title':regexp},
-      {'detail':regexp}
-    ]
-  })
-  .sort({start:1})
-  .exec(function(err, docs) {
-    res.render('search', { programs: docs});
+  program.search(req.params.word, function(err, programs) {
+    res.render('search', {programs: programs});
   });
-
 };
 
 exports.reserve = function(req, res) {
-  var eid = req.params.id;
-  model.program
-  .findOne({eid: eid}, function(err, doc) {
-    var reservation = new model.reservation;
-    reservation.sid = doc.sid;
-    reservation.phch = doc.phch;
-    reservation.title = doc.title.replace(/[\s|#|＃|-].*$/, '');
-    reservation.start = doc.start;
-    reservation.end = doc.end;
-    reservation.duration = doc.duration;
-    reservation.categoryL = doc.categoryL;
-    reservation.categoryM = doc.categoryM;
-    reservation.continue = true;
-    reservation.interval = 1000*60*60*24*7;
-    reservation.save(function(err) {
-      res.redirect('/reserved');
-    });
+  reservation.createFromEid(req.params.id, function(err) {
+    res.redirect('/reserved');
   });
 }
 
 exports.reserved = function(req, res) {
-  reserved.getReserved(function(programs) {
+  reservation.getReserved(function(programs) {
     programs.sort(function(a,b) {
       return a.start - b.start;
     });
-    model.reservation.find({}).exec(function(err, reservations) {
+    reservation.getList(function(err, reservations) {
       res.render('reserved', {
         programs: programs,
         reservations: reservations

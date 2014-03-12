@@ -10,8 +10,8 @@ html
   body
     #header
       a(href="/") moareco
-      a(href="/reserved") reserved
       form#search(action="/search/")
-        input(type="text",name="word")
-        input(type="submit",value="search")
+        input(type="text",name="word",placeholder="search")
+      a(href="/reserved") reserved
+      a(href="/videos") videos
     block content
