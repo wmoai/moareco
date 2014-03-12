@@ -80,6 +80,13 @@ video {
   background-color: aliceblue;
   border-color: deepskyblue;
 }
+.channel .program.reserved {
+  border-color: red;
+  background-color: pink;
+}
+.channel .program.reserved:hover {
+  background-color: lightpink;
+}
 .channel .program div {
   margin: 5px 10px;
   word-break: break-all;
@@ -112,6 +119,11 @@ video {
 }
 #list a .title {
   font-weight: bold;
+}
+#list a .detail {
+  height: 1.4em;
+  overflow: hidden;
+  color: dimgray;
 }
 
 #remark {

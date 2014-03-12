@@ -36,7 +36,7 @@ exports.search = function(req, res) {
 };
 
 exports.reserve = function(req, res) {
-  reservation.createFromEid(req.params.id, function(err) {
+  reservation.create(req.params.id, function(err) {
     res.redirect('/reserved');
   });
 }
@@ -56,9 +56,7 @@ exports.reserved = function(req, res) {
 }
 
 exports.deleteReserved = function(req, res) {
-  model.reservation
-  .remove({_id:req.params.id})
-  .exec(function(err) {
+  reservation.remove(req.params.id, function(err) {
     res.redirect('/reserved');
   });
 }

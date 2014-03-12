@@ -32,11 +32,15 @@ $(function() {
             'top': (data[i].start - baseDate.getTime()) / (60 * 1000) * pxpm,
             'z-index': i + pcnt
           };
-          $('<a>', {
+          var attr = {
             'class':'program',
             'href':'/program/'+data[i].eid,
             'data-eid':data[i].eid
-          })
+          }
+          if (data[i].reserved) {
+            attr.class += ' reserved';
+          }
+          $('<a>', attr)
           .attr('data-count', i + pcnt)
           .css(css)
           .append($('<div>', {'class':'title'}).html(data[i].title))

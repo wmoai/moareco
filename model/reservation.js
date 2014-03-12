@@ -4,7 +4,7 @@ var cronJob = require('cron').CronJob
   , video = require('../model/video')
 ;
 
-exports.createFromEid = function(eid, callback) {
+exports.create = function(eid, callback) {
   model.program
   .findOne({eid: eid}, function(err, program) {
     if (err) {
@@ -23,8 +23,20 @@ exports.createFromEid = function(eid, callback) {
     reservation.continue = true;
     reservation.interval = 1000*60*60*24*7;
     reservation.save(function(err) {
+      model.program
+      .update({eid: eid}, {reserved: true})
+      .exec(function(err) {
+      });
       callback(err);
     });
+  });
+}
+
+exports.remove = function(id, callback) {
+  model.reservation
+  .remove({_id:id})
+  .exec(function(err) {
+    callback(err);
   });
 }
 
@@ -54,6 +66,7 @@ exports.reserve = function() {
       }
     }
   });
+  // check reserved
   getReserved({}, function(programs) {
     for(var i=0; i<programs.length; i++) {
       model.program
@@ -62,6 +75,7 @@ exports.reserve = function() {
       });
     }
   });
+  // TODO check remove reservation
 }
 
 var ReserveJob = function(program) {
