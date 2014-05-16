@@ -3,11 +3,12 @@ var model = require('../model')
   , moment = require('moment')
   , path = require('path')
   , exec = require('child_process').exec
+  , spawn = require('child_process').spawn
 ;
 
 exports.createFromProgram = function(program, callback) {
   // record ts
-  var tsName = getTSPath(program.eid, moment().format('YYYYMM'));
+  var tsName = _getTSPath(program.sid, program.eid, moment().format('YYYYMM'));
   var duration = program.duration / 1000;
   var cmdRec = 'recpt1 --b25 --strip '+program.phch+' '+duration+' '+tsName;
   console.log('start recording :'+cmdRec);
@@ -22,10 +23,12 @@ exports.createFromProgram = function(program, callback) {
   video.eid = program.eid;
   video.title = program.title;
   video.detail = program.detail;
+  video.start = program.start;
   video.duration = program.duration;
   video.categoryL = program.categoryL;
   video.categoryM = program.categoryM;
   video.month = moment().format('YYYYMM');
+  video.tags = [_getTitleTag(program.title)];
   video.encoded = false;
   video.save(function(err) {
   });
@@ -33,36 +36,59 @@ exports.createFromProgram = function(program, callback) {
 
 var encoder = {
   _encode : function() {
-    self = this;
+    var self = this;
     if (self.videos.length <= self.index) {
       return;
     }
     var video = self.videos[self.index];
     self.index++;
-    var ts = getTSPath(video.eid, video.month);
+    var ts = _getTSPath(video.sid, video.eid, video.month);
     if (!fs.existsSync(ts)) {
       console.log('not found : ' + video.eid);
       model.video
-      .update({eid: video.eid}, {notfound: true})
+      .update({
+        sid: video.sid ,
+        eid: video.eid
+      }, {garbage: true})
       .exec(function(err) {
         self._encode();
       });
     } else {
-      var mp4 = getMP4Path(video.eid, video.month);
-      var cmdEnc = 'ffmpeg -i ' + ts
-                 + ' -c:v libx264 -c:a libfaac -preset fast -deinterlace -f mp4 ' + mp4;
-      console.log('start encode : ' + video.eid);
-      exec(cmdEnc, function(error, stdout, stderr) {
-        if (!error) {
-          console.log('end encode');
+      var mp4 = _getMP4Path(video.sid, video.eid, video.month);
+      if (fs.existsSync(mp4)) {
+        fs.renameSync(mp4, mp4 + moment().format('YYYYMMDDHHmmss'));
+      }
+      console.log('encode start : ' + video.eid + ' : ' + new Date());
+      var ffmpeg = spawn(
+        'ffmpeg',
+        [
+          '-i', ts,
+          '-c:v', 'libx264',
+          '-c:a', 'libfaac',
+          '-fpre', '/usr/local/share/ffmpeg/libx264-hq-ts.ffpreset',
+          '-deinterlace',
+          '-async', '1',
+          '-f', 'mp4',
+          mp4
+        ]
+      );
+      ffmpeg.stderr.on('data', function(data) {
+        // console.log(data.toString('utf8'));
+      });
+      ffmpeg.on('close', function(code, signal) {
+        if (code) {
+          console.log('encode error : ' + video.eid + ' : ' + new Date());
+          self._encode();
+        } else {
+          console.log('encode end : ' + video.eid + ' : ' + new Date());
           model.video
-          .update({eid: video.eid}, {encoded: true})
+          .update({
+            sid: video.sid ,
+            eid: video.eid
+          }, {encoded: true})
           .exec(function(err) {
             self._encode();
           });
-        } else {
-          console.log('encode err ');
-          self._encode();
         }
       });
     }
@@ -94,24 +120,136 @@ exports.getEncodedList = function(callback) {
   });
 }
 
-exports.getMP4 = function(video) {
-  return getMP4WebPath(eid, video.month);
+exports.get = function(sid, eid, callback) {
+  model.video
+  .findOne({
+    sid: sid,
+    eid: eid
+  })
+  .exec(function(err, video) {
+    callback(err, video);
+  });
 }
 
-var _getVideoPath = function(eid, month, type) {
+exports.getMP4WebPath = function(video) {
+  return _getMP4WebPath(video.sid, video.eid, video.month);
+}
+
+var _getVideoPath = function(sid, eid, month, type) {
   return path.resolve(__dirname, '..')
          + '/public/video/'
-         + month+'/'+ 
-         + eid+'.'+type;
+         + month + '/'
+         + sid + '/'
+         + eid + '.' + type;
 }
-var getTSPath = function(eid, month) {
-  return _getVideoPath(eid, month, 'ts');
+var _getTSPath = function(sid, eid, month) {
+  return _getVideoPath(sid, eid, month, 'ts');
 }
-var getMP4Path = function(eid, month) {
-  return _getVideoPath(eid, month, 'mp4');
+var _getMP4Path = function(sid, eid, month) {
+  return _getVideoPath(sid, eid, month, 'mp4');
 }
-var getMP4WebPath = function(eid, month) {
-  return '/video/' + month + '/' + eid + '.mp4';
+var _getMP4WebPath = function(sid, eid, month) {
+  return '/video/' + month + '/' + sid + '/' + eid + '.mp4';
 }
+
+var _getTitleTag = function(title) {
+  return title.replace(/【[^】]+】/g, '')
+  .replace(/「[^」]+」/g, '')
+  .replace(/[\s|#|＃|-].*$/, '');
+}
+
+exports.setDeleteFlag = function(sid, eid) {
+
+}
+
+exports.cleanup = function() {
+  // TODO db doc delete
+  // TODO ts, mp4 delete
+  model.video
+  .find({garbage : true})
+  .exec(function(err, videos) {
+
+  });
+}
+
+exports.migrateTag = function() {
+  model.video
+  .find({})
+  .exec(function(err, videos) {
+    for (var i=0; i<videos.length; i++) {
+      var video = videos[i];
+      var ttag = _getTitleTag(video.title);
+      video.tags = [ttag];
+      video.save(function(err) {
+        console.log(err);
+      });
+    }
+  });
+}
+exports.tagList = function(callback) {
+  model.video
+  .distinct('tags')
+  .exec(function(err, tags) {
+    callback(err, tags);
+  });
+}
+
+exports.searchTag = function(tag, callback) {
+  model.video
+  .find({tags: tag})
+  .sort({start:1})
+  .exec(function(err, videos) {
+    callback(err, videos);
+  });
+}
+
+exports.deleteTs = function() {
+  model.video
+  .find({
+    $or: [
+      { start:{ $exists : false} },
+      { start:{ $lt : moment().subtract('weeks',1).unix()*1000 } }
+    ],
+    encoded : true,
+    missingTs: {$ne:true}
+  })
+  .exec(function(err, videos) {
+    for (var i=0; i<videos.length; i++) {
+      var video = videos[i];
+      var tsPath = _getTSPath(video.sid, video.eid, video.month)
+      if (fs.existsSync(tsPath)) {
+        fs.unlinkSync(_getTSPath(video.sid, video.eid, video.month));
+      }
+      video.missingTs = true;
+      video.save(function(err) {
+      });
+    }
+  });
+}
+
+// exports.migrateFile = function() {
+  // model.video.find({})
+  // .exec(function(err, videos) {
+    // for (var i=0; i<videos.length; i++) {
+      // var video = videos[i];
+      // var ts = _getTSPath(video.eid, video.month);
+      // if (fs.existsSync(ts)) {
+        // var ts2 = _getTSPath2(video.sid, video.eid, video.month);
+        // console.log('rename :' + ts2);
+        // fs.renameSync(ts, ts2);
+      // } else {
+        // console.log('Not exists :' + ts);
+      // }
+      // var mp4 = _getMP4Path(videos[i].eid, videos[i].month);
+      // if (fs.existsSync(mp4)) {
+        // console.log('rename :' + mp4);
+        // fs.renameSync(mp4, _getMP4Path2(video.sid, video.eid, video.month));
+      // } else {
+        // console.log('Not exists :' + mp4);
+      // }
+
+    // }
+  // });
+// }
 
 

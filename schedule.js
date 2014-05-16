@@ -2,13 +2,15 @@ var cronJob = require('cron').CronJob
   , model = require('./model')
   , epgdump = require('./epgdump')
   , reservation = require('./model/reservation')
+  , program = require('./model/program')
   , video = require('./model/video')
 ;
 
 var checkReserveJob = new cronJob({
   cronTime: "0 */5 * * * *",
   onTick: function() {
-    reservation.reserve();
+    program.autoReserve();
+    program.standbyRecord();
   },
   onComplete: function() {
   },
@@ -39,5 +41,17 @@ var encodeJob = new cronJob({
   start: true,
   timeZone: "Asia/Tokyo"
 });
-    video.encode();
+
+// delete ts
+var deleteTsJob = new cronJob({
+  cronTime: "0 0 9 * * *",
+  onTick: function() {
+    video.deleteTs();
+  },
+  onComplete: function() {
+  },
+  start: true,
+  timeZone: "Asia/Tokyo"
+});
+
 

@@ -12,7 +12,8 @@ var chs = [
   21,
   24,
   23,
-  16
+  16,
+  32
 ];
 
 function saveEpg(epg, ch) {
@@ -41,26 +42,28 @@ function saveEpg(epg, ch) {
     }
     program.date = moment(program.start).format('YYYY/MM/DD (ddd) HH:mm:ss - ')
                    + moment(program.end).format('HH:mm:ss');
-    model.program.findOneAndUpdate({eid:program.eid}, program, {upsert:true}, function(err) {
+    model.program.findOneAndUpdate({
+      eid: program.eid,
+      sid: program.sid
+    }, program, {upsert:true}, function(err) {
     });
   }
 }
 
 var epgDumper = {
   _getEpg : function() {
-    self = this;
+    var self = this;
     if (self.channels.length <= self.index) {
       return;
     }
     var ch = self.channels[self.index];
+    console.log('start'+ch);
     self.index++;
     var tsName = 'tmp/tmp'+ch+'.ts';
     var cmdRec = 'recpt1 --b25 --strip '+ch+' 30 '+tsName;
-    console.log("rec start "+ch);
     exec(cmdRec, {timeout: 90000}, function(error, stdout, stderr) {
       var epgName = 'tmp/tmp'+ch+'.json';
       var cmdDump = 'epgdump json '+tsName+' '+epgName;
-      console.log("dump start "+ch);
       exec(cmdDump, {timeout: 2000}, function(error, stdout, stderr) {
         var cmdCat = 'cat '+epgName;
         exec(cmdCat, {timeout: 2000}, function(error, stdout, stderr) {
@@ -71,7 +74,7 @@ var epgDumper = {
             console.log('parse err');
             console.log(stdout);
           }
-          console.log("end "+ch);
+          console.log('end'+ch);
           self._getEpg();
           fs.unlink(tsName);
           fs.unlink(epgName);

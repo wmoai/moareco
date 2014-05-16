@@ -6,14 +6,18 @@ var mongoose = require('mongoose')
 var Video = new Schema({
   sid: Number,
   phch: Number,
-  eid: {type : Number, unique : true},
+  eid: Number,
   title: String,
   detail: String,
+  start: Number,
   duration : Number,
   categoryL : String,
   categoryM : String,
   month : String,
+  tags : [String],
   encoded : Boolean,
+  missingTs : Boolean,
+  deleted : Boolean,
   notfound : Boolean
 });
 

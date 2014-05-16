@@ -4,9 +4,12 @@ var cronJob = require('cron').CronJob
   , video = require('../model/video')
 ;
 
-exports.create = function(eid, callback) {
+exports.create = function(sid, eid, callback) {
   model.program
-  .findOne({eid: eid}, function(err, program) {
+  .findOne({
+    sid: sid,
+    eid: eid
+  }, function(err, program) {
     if (err) {
       callback(err);
       return;
@@ -14,7 +17,7 @@ exports.create = function(eid, callback) {
     var reservation = new model.reservation;
     reservation.sid = program.sid;
     reservation.phch = program.phch;
-    reservation.title = program.title.replace(/[\s|#|＃|-|【.】].*$/, '');
+    reservation.title = program.title.replace(/【.】/g, '').replace(/[\s|#|＃|-].*$/, '');
     reservation.start = program.start;
     reservation.end = program.end;
     reservation.duration = program.duration;
@@ -53,7 +56,6 @@ exports.getList = function(callback) {
 var reserving = [];
 
 exports.reserve = function() {
-  console.log('check reservation');
   var now = new Date().getTime();
   var there = now + 2 * 3600 * 1000;
   getReserved({start:{'$lt':there}}, function(programs) {
@@ -66,17 +68,9 @@ exports.reserve = function() {
       }
     }
   });
-  // check reserved
-  getReserved({}, function(programs) {
-    for(var i=0; i<programs.length; i++) {
-      model.program
-      .update({eid:programs[i].eid}, {reserved:true})
-      .exec(function(err) {
-      });
-    }
-  });
-  // TODO check remove reservation
 }
+
+
 
 var ReserveJob = function(program) {
   this.job = new cronJob({
@@ -106,6 +100,7 @@ var getReserved = function(condition, callback) {
         for (var i=0; i<reservation.length; i++) {
           condition.title = new RegExp('^'+reservation[i].title);
           condition.sid = reservation[i].sid;
+          condition.doNotRecord = {$ne: true};
           if (!condition.start) {
             condition.start = {};
           }

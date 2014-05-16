@@ -105,7 +105,7 @@ video {
   display: -webkit-box;
 }
 
-#list a {
+#list .row {
   display: block;
   width: 400px;
   margin :2px 5px;
@@ -113,17 +113,26 @@ video {
   border: 3px solid skyblue;
   -webkit-border-radius: 10px;
 }
-#list a:hover {
+#list .row:hover {
   background-color: aliceblue;
   border-color: deepskyblue;
 }
-#list a .title {
+#list .row .title {
   font-weight: bold;
 }
-#list a .detail {
+#list .row .detail {
   height: 1.4em;
   overflow: hidden;
   color: dimgray;
+}
+#list .tag {
+  display: block;
+  float: left;
+  margin-right: 10px;
+  margin-bottom: 5px;
+  padding: 5px 10px;
+  border: 1px solid skyblue;
+  -webkit-border-radius: 10px;
 }
 
 #remark {

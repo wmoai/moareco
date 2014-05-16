@@ -12,13 +12,19 @@ app.configure(function(){
 
 app.listen(3000);
 
-app.get('/', routes.index);
-app.get('/program/:id', routes.program);
-app.get('/movie/:id', routes.movie);
-app.get('/videos', routes.videos);
-app.get('/search/:word', routes.search);
-app.post('/program/reserve/:id', routes.reserve);
-app.get('/reserved', routes.reserved);
-app.post('/reserved/delete/:id', routes.deleteReserved);
-// ajax
-app.get('/programs', routes.programs);
+app.get('/', routes.program.table);
+
+app.post('/program/reserve/:sid/:eid', routes.program.reserve);
+app.post('/program/reserve/cancel/:sid/:eid', routes.program.cancelReserve);
+app.get('/program/reserved', routes.program.reserved);
+app.post('/program/reserved/delete/:id', routes.program.deleteReserved);
+app.get('/program/search', routes.program.search);
+app.get('/program/search/:word', routes.program.search);
+app.get('/program/:sid/:eid', routes.program.detail);
+app.get('/program/:sid', routes.program.serviceList);
+
+app.get('/video', routes.video.list);
+app.get('/video/tag/:tag', routes.video.tagList);
+app.get('/video/:sid/:eid', routes.video.screen);
+
+

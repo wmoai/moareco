@@ -6,7 +6,7 @@ var mongoose = require('mongoose')
 var Program = new Schema({
   sid: Number,
   phch: Number,
-  eid: {type : Number, unique : true},
+  eid: Number,
   title: String,
   detail: String,
   start: Number,
@@ -15,7 +15,10 @@ var Program = new Schema({
   categoryL : String,
   categoryM : String,
   date : String,
-  reserved : Boolean
+  manualReserved : Boolean,
+  autoReserved : Boolean,
+  autoReservationId : ObjectId,
+  doNotRecord : Boolean
 });
 
 module.exports = mongoose.model('program', Program);

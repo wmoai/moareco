@@ -1,4 +1,4 @@
-extends ./layout
+extends ../layout
 
 block title
   title= title
@@ -9,10 +9,10 @@ block content
       #list
         h1 reserved
         for program, index in programs
-          include ./programRow.jade
+          include ./listRow.jade
       #remark
         h1 pattern
         for reservation, index in reservations
-          form(method="POST",action="/reserved/delete/#{reservation._id}")
+          form(method="POST",action="/program/reserved/delete/#{reservation._id}")
             = reservation.title
             input(type="submit",value="x")

@@ -14,7 +14,7 @@ $(function() {
     $('.channel').each(function() {
       var sid = $(this).data('sid');
       $.ajax({
-        url: '/programs',
+        url: '/program/service',
         data: {
           sid : sid,
           start : startUTime,
@@ -34,10 +34,11 @@ $(function() {
           };
           var attr = {
             'class':'program',
-            'href':'/program/'+data[i].eid,
+            'href':'/program/'+data[i].sid+'/'+data[i].eid,
             'data-eid':data[i].eid
           }
-          if (data[i].reserved) {
+          if (data[i].manualReserved 
+              || (data[i].manualReserved !== false &&  data[i].autoReserved)) {
             attr.class += ' reserved';
           }
           $('<a>', attr)

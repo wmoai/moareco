@@ -1,0 +1,18 @@
+extends ../layout
+
+block title
+  title= data.title
+
+block content
+  #container
+    h1= data.title
+    h2= data.date
+    h3= data.detail
+    if data.reserved
+      div 予約済み
+      form(action="/program/reserve/cancel/#{data.sid}/#{data.eid}", method="post")
+        input(type="submit", value="録画しない")
+    else
+      form(action="/program/reserve/#{data.sid}/#{data.eid}", method="post")
+        input(type="submit", value="録画予約")
+      

@@ -1,0 +1,17 @@
+extends ../layout
+
+block title
+  title videos
+
+block content
+  #container
+    #list
+      h1 video
+      div
+        for tag, index in tags
+          a.tag(href="/video/tag/#{tag}")= tag
+      div(style="clear:both;")
+        for video, index in videos
+          a.row(href="/video/#{video.sid}/#{video.eid}", target="_blank")
+            .title= video.title
+            .detail= video.detail
