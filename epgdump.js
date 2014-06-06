@@ -57,7 +57,6 @@ var epgDumper = {
       return;
     }
     var ch = self.channels[self.index];
-    console.log('start'+ch);
     self.index++;
     var tsName = 'tmp/tmp'+ch+'.ts';
     var cmdRec = 'recpt1 --b25 --strip '+ch+' 30 '+tsName;
@@ -71,10 +70,9 @@ var epgDumper = {
             var epg = JSON.parse(stdout);
             saveEpg(epg, ch);
           } catch (e) {
-            console.log('parse err');
+            console.log('epgdump : parse err');
             console.log(stdout);
           }
-          console.log('end'+ch);
           self._getEpg();
           fs.unlink(tsName);
           fs.unlink(epgName);

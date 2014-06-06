@@ -12,6 +12,13 @@ block content
           a.tag(href="/video/tag/#{tag}")= tag
       div(style="clear:both;")
         for video, index in videos
-          a.row(href="/video/#{video.sid}/#{video.eid}", target="_blank")
-            .title= video.title
-            .detail= video.detail
+          .row
+            a.video(href="/video/#{video.sid}/#{video.eid}", target="_blank")
+              .title= video.title
+              .detail= video.detail
+            if !video.deleted
+              form.deleteVideo(method="POST",action="/video/delete/#{video.sid}/#{video.eid}",data-title="#{video.title}")
+                input(type="submit",value="x")
+            else
+              span(style="color:red") 削除されます
+

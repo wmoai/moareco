@@ -106,6 +106,10 @@ video {
 }
 
 #list .row {
+  display: -webkit-box;
+}
+
+#list .video {
   display: block;
   width: 400px;
   margin :2px 5px;
@@ -113,14 +117,14 @@ video {
   border: 3px solid skyblue;
   -webkit-border-radius: 10px;
 }
-#list .row:hover {
+#list .video:hover {
   background-color: aliceblue;
   border-color: deepskyblue;
 }
-#list .row .title {
+#list .video .title {
   font-weight: bold;
 }
-#list .row .detail {
+#list .video .detail {
   height: 1.4em;
   overflow: hidden;
   color: dimgray;
@@ -133,6 +137,9 @@ video {
   padding: 5px 10px;
   border: 1px solid skyblue;
   -webkit-border-radius: 10px;
+}
+#list .deleteVideo input {
+  cursor: pointer;
 }
 
 #remark {

@@ -158,20 +158,6 @@ var _getTitleTag = function(title) {
   .replace(/[\s|#|＃|-].*$/, '');
 }
 
-exports.setDeleteFlag = function(sid, eid) {
-
-}
-
-exports.cleanup = function() {
-  // TODO db doc delete
-  // TODO ts, mp4 delete
-  model.video
-  .find({garbage : true})
-  .exec(function(err, videos) {
-
-  });
-}
-
 exports.migrateTag = function() {
   model.video
   .find({})
@@ -188,9 +174,25 @@ exports.migrateTag = function() {
 }
 exports.tagList = function(callback) {
   model.video
-  .distinct('tags')
-  .exec(function(err, tags) {
-    callback(err, tags);
+  .aggregate({
+    $unwind : '$tags' 
+  }, {
+    $group: {
+      _id : '$tags',
+      max: { $max : '$start' }
+    }
+  },{
+    $sort: { max : -1 }
+  },{ $project: {
+    _id : 0,
+    tag: '$_id'
+  }
+  }).exec(function(err, tags) {
+    var arr = new Array();
+    for (var i=0; i<tags.length; i++) {
+      arr.push(tags[i].tag);
+    }
+    callback(err, arr);
   });
 }
 
@@ -222,6 +224,55 @@ exports.deleteTs = function() {
       }
       video.missingTs = true;
       video.save(function(err) {
+      });
+    }
+  });
+}
+
+exports.reserveDelete = function(sid, eid) {
+  model.video
+  .update({
+    sid: sid,
+    eid: eid
+  }, {deleted : true})
+  .exec(function(err) {
+  });
+}
+
+exports.deleteList = function(callback) {
+  model.video
+  .find({deleted : true})
+  .exec(function(err, videos) {
+    callback(err, videos);
+  });
+}
+
+exports.cancelDelete = function(sid, eid, callback) {
+  model.video
+  .update({
+    sid: sid,
+    eid: eid
+  }, {deleted : false})
+  .exec(function(err) {
+    callback(err);
+  });
+}
+
+exports.erase = function(sid, eid) {
+  model.video
+  .find({deleted : true})
+  .exec(function(err, videos) {
+    for (var i=0; i<videos.length; i++) {
+      var video = videos[i];
+      var ts = _getTSPath(video.sid, video.eid, video.month);
+      var mp4 = _getMP4Path(video.sid, video.eid, video.month);
+      if (fs.existsSync(ts)) {
+        fs.unlinkSync(ts);
+      }
+      if (fs.existsSync(mp4)) {
+        fs.unlinkSync(mp4);
+      }
+      video.remove(function(err) {
       });
     }
   });

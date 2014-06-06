@@ -1,0 +1,17 @@
+extends ../layout
+
+block title
+  title videos
+
+block content
+  #container
+    #list
+      h1 deleted video
+      div(style="clear:both;")
+        for video, index in videos
+          .row
+            a.video(href="/video/#{video.sid}/#{video.eid}", target="_blank")
+              .title= video.title
+              .detail= video.detail
+            form(method="POST",action="/video/delete/cancel/#{video.sid}/#{video.eid}")
+              input(type="submit",value="cancel")

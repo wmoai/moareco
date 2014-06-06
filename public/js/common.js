@@ -5,5 +5,23 @@ $(function() {
     return false;
   });
 
+  // reserve deleting video
+  $('.deleteVideo').on('submit', function() {
+    var confirm = '_confirm';
+    var form = $(this);
+    if (form.hasClass(confirm)) {
+      return true;
+    } else {
+      var message = '「'+$(this).data('title') + '」を削除予約します';
+      alertify.confirm(message, function (e) {
+        if (e) {
+          form
+          .addClass(confirm)
+          .trigger('submit');
+        }
+      });
+      return false;
+    }
+  });
 
 });

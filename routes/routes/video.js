@@ -21,10 +21,28 @@ exports.tagList = function(req, res) {
 }
 
 exports.screen = function(req, res) {
-  model.video.get(req.params.sid, req.params.eid, function(err, v) {
+  model.video.get(req.params.sid, req.params.eid, function(err, video) {
     res.render('video/screen', {
-      video: v ,
-      mp4: model.video.getMP4WebPath(v)
+      video: video,
+      mp4: model.video.getMP4WebPath(video)
+    });
+  });
+}
+
+exports.delete = function(req, res) {
+  model.video.reserveDelete(req.params.sid, req.params.eid);
+  res.redirect(req.get('referer'));
+}
+exports.cancelDelete = function(req, res) {
+  model.video.cancelDelete(req.params.sid, req.params.eid, function(err) {
+    res.redirect(req.get('referer'));
+  });
+}
+
+exports.deleteList  = function(req, res) {
+  model.video.deleteList(function(err, videos) {
+    res.render('video/deleteList', {
+      videos: videos
     });
   });
 }
