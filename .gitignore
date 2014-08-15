@@ -1,4 +1,7 @@
 node_modules
 public/video/*
+log/*
 epg.json
 bower_components
+
+hoge.js

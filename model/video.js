@@ -2,18 +2,17 @@ var model = require('../model')
   , fs = require('fs')
   , moment = require('moment')
   , path = require('path')
-  , exec = require('child_process').exec
   , spawn = require('child_process').spawn
-;
+  , ts = require('./ts')
+  , logger = require('../logger')
+  ;
 
 exports.createFromProgram = function(program, callback) {
   // record ts
   var tsName = _getTSPath(program.sid, program.eid, moment().format('YYYYMM'));
-  var duration = program.duration / 1000;
-  var cmdRec = 'recpt1 --b25 --strip '+program.phch+' '+duration+' '+tsName;
-  console.log('start recording :'+cmdRec);
-  exec(cmdRec, {timeout: program.duration+60000}, function(error, stdout, stderr) {
-    console.log('end recording '+program.eid);
+  logger.backend.info('start recoding : ' + program.phch);
+  ts.recode(program.phch, program.duration, tsName, function(error) {
+    logger.backend.info('end recoding : ' + program.phch);
     callback(error);
   });
   // insert mongo
@@ -42,13 +41,12 @@ var encoder = {
     }
     var video = self.videos[self.index];
     self.index++;
-    var ts = _getTSPath(video.sid, video.eid, video.month);
-    if (!fs.existsSync(ts)) {
-      console.log('not found : ' + video.eid);
+    var tsPath = _getTSPath(video.sid, video.eid, video.month);
+    if (!fs.existsSync(tsPath)) {
+      logger.backend.warn('encode : ts not found ' + video._id);
       model.video
       .update({
-        sid: video.sid ,
-        eid: video.eid
+        _id: video._id
       }, {garbage: true})
       .exec(function(err) {
         self._encode();
@@ -58,11 +56,10 @@ var encoder = {
       if (fs.existsSync(mp4)) {
         fs.renameSync(mp4, mp4 + moment().format('YYYYMMDDHHmmss'));
       }
-      console.log('encode start : ' + video.eid + ' : ' + new Date());
       var ffmpeg = spawn(
         'ffmpeg',
         [
-          '-i', ts,
+          '-i', tsPath,
           '-c:v', 'libx264',
           '-c:a', 'libfaac',
           '-fpre', '/usr/local/share/ffmpeg/libx264-hq-ts.ffpreset',
@@ -77,14 +74,13 @@ var encoder = {
       });
       ffmpeg.on('close', function(code, signal) {
         if (code) {
-          console.log('encode error : ' + video.eid + ' : ' + new Date());
+          logger.backend.error('encode error : ' + video.eid);
           self._encode();
         } else {
-          console.log('encode end : ' + video.eid + ' : ' + new Date());
+          logger.backend.info('encode end : ' + video.eid);
           model.video
           .update({
-            sid: video.sid ,
-            eid: video.eid
+            _id: video._id
           }, {encoded: true})
           .exec(function(err) {
             self._encode();
@@ -101,11 +97,11 @@ var encoder = {
 }
 
 exports.encode = function() {
-  console.log('start encode job : ' + new Date());
+  logger.backend.info('start encode job');
   model.video
   .find({
     encoded: {$ne: true},
-    notfound: {$ne: true},
+    notfound: {$ne: true}
   })
   .exec(function(err, videos) {
     encoder.run(videos);
@@ -120,12 +116,9 @@ exports.getEncodedList = function(callback) {
   });
 }
 
-exports.get = function(sid, eid, callback) {
+exports.get = function(id, callback) {
   model.video
-  .findOne({
-    sid: sid,
-    eid: eid
-  })
+  .findOne({ _id: id })
   .exec(function(err, video) {
     callback(err, video);
   });
@@ -167,7 +160,6 @@ exports.migrateTag = function() {
       var ttag = _getTitleTag(video.title);
       video.tags = [ttag];
       video.save(function(err) {
-        console.log(err);
       });
     }
   });
@@ -196,16 +188,29 @@ exports.tagList = function(callback) {
   });
 }
 
-exports.searchTag = function(tag, callback) {
+exports.getNewList = function(callback) {
   model.video
-  .find({tags: tag})
-  .sort({start:1})
+  .find({encoded :true})
+  .sort({start:-1})
+  .limit(20)
   .exec(function(err, videos) {
     callback(err, videos);
   });
 }
 
-exports.deleteTs = function() {
+exports.searchTag = function(tag, callback) {
+  model.video
+  .find({
+    tags: tag
+  , encoded: true
+  })
+  .sort({start:-1})
+  .exec(function(err, videos) {
+    callback(err, videos);
+  });
+}
+
+exports.deleteOldTs = function() {
   model.video
   .find({
     $or: [
@@ -218,9 +223,10 @@ exports.deleteTs = function() {
   .exec(function(err, videos) {
     for (var i=0; i<videos.length; i++) {
       var video = videos[i];
-      var tsPath = _getTSPath(video.sid, video.eid, video.month)
+      var tsPath = _getTSPath(video.sid, video.eid, video.month);
       if (fs.existsSync(tsPath)) {
         fs.unlinkSync(_getTSPath(video.sid, video.eid, video.month));
+        logger.backend.info('delete ts : ' + video._id);
       }
       video.missingTs = true;
       video.save(function(err) {
@@ -229,78 +235,60 @@ exports.deleteTs = function() {
   });
 }
 
-exports.reserveDelete = function(sid, eid) {
+var _delete = function(id) {
   model.video
-  .update({
-    sid: sid,
-    eid: eid
-  }, {deleted : true})
+  .findOne({
+    _id: id,
+    deleted : true
+  })
+  .exec(function(err, video) {
+    var tsPath = _getTSPath(video.sid, video.eid, video.month);
+    if (fs.existsSync(tsPath)) {
+      fs.unlinkSync(tsPath);
+    }
+    var mp4Path = _getMP4Path(video.sid, video.eid, video.month);
+    if (fs.existsSync(mp4Path)) {
+      fs.unlinkSync(mp4Path);
+    }
+    video.remove(function(err, video) {
+      logger.backend.info('delete video : ' + video.sid + ',' + video.eid + ',' + video.month);
+    });
+  });
+}
+
+exports.deleteReserved = function() {
+  _deleteList(function(err, videos) {
+    for(var i=0; i<videos.length; i++) {
+      _delete(videos[i]._id);
+    }
+  });
+}
+
+exports.reserveDelete = function(id) {
+  model.video
+  .update(
+    { _id: id },
+    {deleted : true})
   .exec(function(err) {
   });
 }
 
-exports.deleteList = function(callback) {
+var _deleteList = function(callback) {
   model.video
   .find({deleted : true})
   .exec(function(err, videos) {
     callback(err, videos);
   });
 }
+exports.deleteList = _deleteList;
 
-exports.cancelDelete = function(sid, eid, callback) {
+exports.cancelDelete = function(id, callback) {
   model.video
-  .update({
-    sid: sid,
-    eid: eid
-  }, {deleted : false})
+  .update(
+    { _id: id },
+    { deleted : false })
   .exec(function(err) {
     callback(err);
   });
 }
-
-exports.erase = function(sid, eid) {
-  model.video
-  .find({deleted : true})
-  .exec(function(err, videos) {
-    for (var i=0; i<videos.length; i++) {
-      var video = videos[i];
-      var ts = _getTSPath(video.sid, video.eid, video.month);
-      var mp4 = _getMP4Path(video.sid, video.eid, video.month);
-      if (fs.existsSync(ts)) {
-        fs.unlinkSync(ts);
-      }
-      if (fs.existsSync(mp4)) {
-        fs.unlinkSync(mp4);
-      }
-      video.remove(function(err) {
-      });
-    }
-  });
-}
-
-// exports.migrateFile = function() {
-  // model.video.find({})
-  // .exec(function(err, videos) {
-    // for (var i=0; i<videos.length; i++) {
-      // var video = videos[i];
-      // var ts = _getTSPath(video.eid, video.month);
-      // if (fs.existsSync(ts)) {
-        // var ts2 = _getTSPath2(video.sid, video.eid, video.month);
-        // console.log('rename :' + ts2);
-        // fs.renameSync(ts, ts2);
-      // } else {
-        // console.log('Not exists :' + ts);
-      // }
-      // var mp4 = _getMP4Path(videos[i].eid, videos[i].month);
-      // if (fs.existsSync(mp4)) {
-        // console.log('rename :' + mp4);
-        // fs.renameSync(mp4, _getMP4Path2(video.sid, video.eid, video.month));
-      // } else {
-        // console.log('Not exists :' + mp4);
-      // }
-
-    // }
-  // });
-// }
-
 

@@ -17,6 +17,7 @@ var checkReserveJob = new cronJob({
   start: true,
   timeZone: "Asia/Tokyo"
 });
+    program.standbyRecord();
 
 // update epg everyday 6 o'clock
 var updateEpgJob = new cronJob({
@@ -42,11 +43,12 @@ var encodeJob = new cronJob({
   timeZone: "Asia/Tokyo"
 });
 
-// delete ts
-var deleteTsJob = new cronJob({
+// delete job
+var deleteJob = new cronJob({
   cronTime: "0 0 9 * * *",
   onTick: function() {
-    video.deleteTs();
+    video.deleteOldTs();
+    video.deleteReserved();
   },
   onComplete: function() {
   },

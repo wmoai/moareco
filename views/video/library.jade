@@ -5,11 +5,16 @@ block title
 
 block content
   #container
-    #list
-      div
+    aside
+      ul
         for tag, index in tags
-          a.tag(href="/video/tag/#{tag}")= tag
-      div(style="clear:both;")
+          if tag == selected
+            li.selected= tag
+          else
+            li
+              a.tag(href="/video/tag/#{tag}")= tag
+    section
+      #list
         for video, index in videos
           .row
             a.video(href="/video/#{video._id}", target="_blank")
@@ -20,4 +25,5 @@ block content
                 input(type="submit",value="x")
             else
               span(style="color:red") 削除されます
+
 

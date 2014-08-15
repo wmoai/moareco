@@ -10,8 +10,8 @@ block content
       div(style="clear:both;")
         for video, index in videos
           .row
-            a.video(href="/video/#{video.sid}/#{video.eid}", target="_blank")
+            a.video(href="/video/#{video._id}", target="_blank")
               .title= video.title
               .detail= video.detail
-            form(method="POST",action="/video/delete/cancel/#{video.sid}/#{video.eid}")
+            form(method="POST",action="/video/delete/cancel/#{video._id}")
               input(type="submit",value="cancel")

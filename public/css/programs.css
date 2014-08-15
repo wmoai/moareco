@@ -13,26 +13,62 @@ video {
   width:90%;
 }
 
-#header {
+header {
   display: -webkit-box;
   position: fixed;
   top: 10px;
   z-index: 10000;
   background-color: whitesmoke;
 }
-#header a {
+header a {
   display: block;
   padding: 5px 10px;
   margin: 5px 10px;
   background-color: silver;
 }
-#header form {
+header form {
   margin: 5px 10px;
 }
 #search input {
   -webkit-border-radius: 10px;
   padding: 5px 10px;
   font-size: 12px;
+}
+
+aside {
+  float: left;
+  width: 240px;
+  padding: 10px 15px;
+  margin-bottom: 40px;
+}
+aside ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid skyblue;
+}
+aside li {
+  white-space: nowrap;
+  font-size: 14px;
+}
+aside li.selected {
+  background-color: gainsboro;
+  padding: 3px 10px;
+  line-height: 1.4em;
+}
+aside li a {
+  display: inline-block;
+  width: 100%;
+  padding: 3px 10px;
+  line-height: 1.4em;
+}
+aside li a:hover {
+  background-color: whitesmoke;
+}
+section {
+  float: left;
+  padding: 15px 20px;
 }
 
 #container {
@@ -111,7 +147,7 @@ video {
 
 #list .video {
   display: block;
-  width: 400px;
+  width: 500px;
   margin :2px 5px;
   padding: 5px 10px;
   border: 3px solid skyblue;
@@ -126,6 +162,7 @@ video {
 }
 #list .video .detail {
   height: 1.4em;
+  line-height: 1.4em;
   overflow: hidden;
   color: dimgray;
 }

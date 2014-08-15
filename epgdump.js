@@ -1,7 +1,7 @@
-var fs = require('fs')
-  , exec = require('child_process').exec
-  , model = require('./model')
+var model = require('./model')
   , moment = require('moment')
+  , ts = require('./model/ts.js')
+  , logger = require('./logger')
 ;
 moment.lang('ja');
 
@@ -54,30 +54,14 @@ var epgDumper = {
   _getEpg : function() {
     var self = this;
     if (self.channels.length <= self.index) {
+      logger.backend.info('end epgdump');
       return;
     }
     var ch = self.channels[self.index];
     self.index++;
-    var tsName = 'tmp/tmp'+ch+'.ts';
-    var cmdRec = 'recpt1 --b25 --strip '+ch+' 30 '+tsName;
-    exec(cmdRec, {timeout: 90000}, function(error, stdout, stderr) {
-      var epgName = 'tmp/tmp'+ch+'.json';
-      var cmdDump = 'epgdump json '+tsName+' '+epgName;
-      exec(cmdDump, {timeout: 2000}, function(error, stdout, stderr) {
-        var cmdCat = 'cat '+epgName;
-        exec(cmdCat, {timeout: 2000}, function(error, stdout, stderr) {
-          try {
-            var epg = JSON.parse(stdout);
-            saveEpg(epg, ch);
-          } catch (e) {
-            console.log('epgdump : parse err');
-            console.log(stdout);
-          }
-          self._getEpg();
-          fs.unlink(tsName);
-          fs.unlink(epgName);
-        });
-      })
+    ts.getEpg(ch, function(err, epg) {
+      saveEpg(epg, ch);
+      self._getEpg();
     });
   },
   get : function(channels) {
@@ -88,7 +72,7 @@ var epgDumper = {
 }
 
 module.exports = function() {
-  console.log('start epgdump : ' + new Date());
+  logger.backend.info('start epgdump');
   model.program
   .remove({end : {'$lt' : moment().subtract('hours', 6).valueOf() }})
   .exec(function (err) {

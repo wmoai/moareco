@@ -11,7 +11,8 @@
     "time": "~0.10.0",
     "moment": "~2.5.1",
     "config": "~0.4.35",
-    "synchronize": "~0.7.0"
+    "synchronize": "~0.7.0",
+    "log4js": "~0.6.15"
   },
   "devDependencies": {},
   "scripts": {

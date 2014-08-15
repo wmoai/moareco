@@ -6,22 +6,26 @@ var orm = require('../../model')
 
 exports.list = function(req, res) {
   model.video.tagList(function(err, tags) {
-    // video.getEncodedList(function(err, videos) {
-      res.render('video/list', { videos: [], tags: tags});
-    // });
+    model.video.getNewList(function(err, videos) {
+      res.render('video/library', { videos: videos, tags: tags});
+    });
   });
 }
 
 exports.tagList = function(req, res) {
   model.video.tagList(function(err, tags) {
     model.video.searchTag(req.params.tag, function(err, videos) {
-      res.render('video/list', {videos: videos, tags: tags});
+      res.render('video/library', {
+        videos: videos
+      , tags: tags
+      , selected: req.params.tag
+      });
     });
   });
 }
 
 exports.screen = function(req, res) {
-  model.video.get(req.params.sid, req.params.eid, function(err, video) {
+  model.video.get(req.params.id, function(err, video) {
     res.render('video/screen', {
       video: video,
       mp4: model.video.getMP4WebPath(video)
@@ -30,11 +34,11 @@ exports.screen = function(req, res) {
 }
 
 exports.delete = function(req, res) {
-  model.video.reserveDelete(req.params.sid, req.params.eid);
+  model.video.reserveDelete(req.params.id);
   res.redirect(req.get('referer'));
 }
 exports.cancelDelete = function(req, res) {
-  model.video.cancelDelete(req.params.sid, req.params.eid, function(err) {
+  model.video.cancelDelete(req.params.id, function(err) {
     res.redirect(req.get('referer'));
   });
 }

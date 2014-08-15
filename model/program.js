@@ -39,11 +39,10 @@ exports.getReserved = function(callback) {
   });
 }
 
-exports.manualReserve = function(sid, eid, reserved, callback) {
+exports.manualReserve = function(id, reserved, callback) {
   model.program
   .update({
-    sid: sid,
-    eid: eid
+    _id: id
   } ,{manualReserved: Boolean(reserved)})
   .exec(function(err) {
     callback(err);

@@ -10,9 +10,9 @@ block content
     h3= data.detail
     if data.reserved
       div 予約済み
-      form(action="/program/reserve/cancel/#{data.sid}/#{data.eid}", method="post")
+      form(action="/program/reserve/cancel/#{data._id}", method="post")
         input(type="submit", value="録画しない")
     else
-      form(action="/program/reserve/#{data.sid}/#{data.eid}", method="post")
+      form(action="/program/reserve/#{data._id}", method="post")
         input(type="submit", value="録画予約")
       

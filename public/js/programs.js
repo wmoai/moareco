@@ -34,7 +34,7 @@ $(function() {
           };
           var attr = {
             'class':'program',
-            'href':'/program/'+data[i].sid+'/'+data[i].eid,
+            'href':'/program/'+data[i]._id,
             'data-eid':data[i].eid
           }
           if (data[i].manualReserved 

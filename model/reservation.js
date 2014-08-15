@@ -4,11 +4,10 @@ var cronJob = require('cron').CronJob
   , video = require('../model/video')
 ;
 
-exports.create = function(sid, eid, callback) {
+exports.create = function(id, callback) {
   model.program
   .findOne({
-    sid: sid,
-    eid: eid
+    _id: id
   }, function(err, program) {
     if (err) {
       callback(err);
@@ -17,7 +16,7 @@ exports.create = function(sid, eid, callback) {
     var reservation = new model.reservation;
     reservation.sid = program.sid;
     reservation.phch = program.phch;
-    reservation.title = program.title.replace(/【.】/g, '').replace(/[\s|#|＃|-].*$/, '');
+    reservation.title = _getGroupName(program.title);
     reservation.start = program.start;
     reservation.end = program.end;
     reservation.duration = program.duration;
@@ -27,12 +26,18 @@ exports.create = function(sid, eid, callback) {
     reservation.interval = 1000*60*60*24*7;
     reservation.save(function(err) {
       model.program
-      .update({eid: eid}, {reserved: true})
+      .update({_id: id}, {reserved: true})
       .exec(function(err) {
       });
       callback(err);
     });
   });
+}
+
+var _getGroupName = function(title) {
+  return title.replace(/【[^】]+】/g, '')
+  .replace(/「[^」]+」/g, '')
+  .replace(/[\s|#|＃|-].*$/, '');
 }
 
 exports.remove = function(id, callback) {

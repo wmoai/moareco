@@ -15,8 +15,7 @@ exports.table = function(req, res) {
 exports.detail = function(req, res){
   orm.program
   .findOne({
-    sid: req.params.sid ,
-    eid: req.params.eid
+    _id: req.params.id
   })
   .exec(function(err, program) {
     if (program.manualReserved
@@ -38,8 +37,8 @@ exports.search = function(req, res) {
 }
 
 exports.reserve = function(req, res) {
-  model.reservation.create(req.params.sid, req.params.eid, function(err) {
-    model.program.manualReserve(req.params.sid, req.params.eid, true, function(err) {
+  model.reservation.create(req.params.id, function(err) {
+    model.program.manualReserve(req.params.id, true, function(err) {
       res.redirect('/program/reserved');
       model.program.autoReserve();
     });
@@ -47,8 +46,8 @@ exports.reserve = function(req, res) {
 }
 
 exports.cancelReserve = function(req, res) {
-  model.program.manualReserve(req.params.sid, req.params.eid, false, function(err) {
-    res.redirect('/program/' + req.params.sid + '/' + req.params.eid);
+  model.program.manualReserve(req.params.id, false, function(err) {
+    res.redirect('/program/' + req.params.id);
   });
 }
 
