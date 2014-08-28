@@ -145,9 +145,16 @@ var _getMP4WebPath = function(sid, eid, month) {
   return '/video/' + month + '/' + sid + '/' + eid + '.mp4';
 }
 
+String.prototype.mrRemoveNest = function(start, end) {
+  start = "\\"+start;
+  end = "\\"+end;
+  var reg = new RegExp(start+"[^"+start+end+"]*|[^"+start+end+"]*"+end, "g");
+  return this.replace(reg, '');
+}
+
 var _getTitleTag = function(title) {
-  return title.replace(/【[^】]+】/g, '')
-  .replace(/「[^」]+」/g, '')
+  return title.mrRemoveNest('【', '】')
+  .mrRemoveNest('「', '」')
   .replace(/[\s|#|＃|-].*$/, '');
 }
 
