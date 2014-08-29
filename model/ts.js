@@ -12,7 +12,7 @@ var md5hex = function(str) {
   return md5sum.digest('hex');
 }
 
-var recode = function(phch, duration, output, callback) {
+var record = function(phch, duration, output, callback) {
   if (recodingCount >= tunerCount) {
     logger.backend.error('no recodable tuner');
     return;
@@ -21,20 +21,21 @@ var recode = function(phch, duration, output, callback) {
   var cmdRec = 'recpt1 --b25 --strip '+ phch +' '+ duration/1000 +' '+ output;
   exec(cmdRec, {timeout: duration+60000}, function(error, stdout, stderr) {
     recodingCount--;
-    if (error) {
-      logger.backend.error('recode error');
-      logger.backend.error(error);
-    }
     callback(error);
   });
 }
-exports.recode = recode;
+exports.record = record;
 
 var getEpg = function(phch, callback) {
   var hash = md5hex(phch + ',' + Date.now());
   var tsPath = 'tmp/'+hash+'.ts';
   var duration = 30000;
-  recode(phch, duration, tsPath, function() {
+  record(phch, duration, tsPath, function(error) {
+    if (error) {
+      logger.backend.error('epgdump error : recording failure');
+      callback(error);
+      return;
+    }
     var epgPath = 'tmp/'+hash+'.json';
     var cmdEpg = 'epgdump json '+tsPath+' '+epgPath;
     exec(cmdEpg, {timeout: duration}, function(error, stdout, stderr) {
@@ -48,8 +49,7 @@ var getEpg = function(phch, callback) {
         try {
           callback(null, JSON.parse(data));
         } catch(e) {
-          logger.backend.error('epg parse error');
-          logger.backend.error(e);
+          logger.backend.error('epg parse error : ' + e);
         }
       });
     });

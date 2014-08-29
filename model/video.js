@@ -11,7 +11,10 @@ exports.createFromProgram = function(program, callback) {
   // record ts
   var tsName = _getTSPath(program.sid, program.eid, moment().format('YYYYMM'));
   logger.backend.info('start recoding : ' + program.phch);
-  ts.recode(program.phch, program.duration, tsName, function(error) {
+  ts.record(program.phch, program.duration, tsName, function(error) {
+    if (error) {
+      logger.backend.error('record error');
+    }
     logger.backend.info('end recoding : ' + program.phch);
     callback(error);
   });

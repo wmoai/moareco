@@ -60,7 +60,9 @@ var epgDumper = {
     var ch = self.channels[self.index];
     self.index++;
     ts.getEpg(ch, function(err, epg) {
-      saveEpg(epg, ch);
+      if (!err) {
+        saveEpg(epg, ch);
+      }
       self._getEpg();
     });
   },
