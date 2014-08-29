@@ -1,6 +1,7 @@
 node_modules
 public/video/*
 log/*
+tmp/*
 epg.json
 bower_components
 
