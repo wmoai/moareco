@@ -15,6 +15,9 @@ var getReservedCondition = function() {
   };
 }
 
+String.prototype.escapeRegExp = function() {
+  return this.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
 exports.search = function(word, callback) {
   var words = word.trim().split(/\s+/);
   var searchField = [
@@ -27,7 +30,7 @@ exports.search = function(word, callback) {
     var fieldCondition = [];
     searchField.forEach(function(field) {
       var condition = {};
-      condition[field] = new RegExp(w, "i");
+      condition[field] = new RegExp(w.escapeRegExp(), "i");
       fieldCondition.push(condition);
     });
     conditions.push({
@@ -36,9 +39,7 @@ exports.search = function(word, callback) {
   });
 
   model.program
-  .find({
-    '$and': conditions
-  })
+  .find({'$and': conditions})
   .sort({start:1})
   .exec(function(err, programs) {
     callback(err, programs);
