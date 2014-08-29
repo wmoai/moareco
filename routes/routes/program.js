@@ -29,10 +29,16 @@ exports.detail = function(req, res){
 exports.search = function(req, res) {
   if (req.params.word) {
     model.program.search(req.params.word, function(err, programs) {
-      res.render('program/search', {programs: programs});
+      res.render('program/search', {
+        programs: programs,
+        searchWord: req.params.word
+      });
     });
   } else {
-    res.render('program/search', {programs: []});
+    res.render('program/search', {
+      programs: [],
+      searchWord: ''
+    });
   }
 }
 

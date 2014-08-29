@@ -16,14 +16,28 @@ var getReservedCondition = function() {
 }
 
 exports.search = function(word, callback) {
-  var regexp = new RegExp(word.replace(/^\s+|\s+$/gi,'').replace(/\s+/g,'|'));
+  var words = word.trim().split(/\s+/);
+  var searchField = [
+    'title',
+    'detail',
+    'categoryL'
+  ];
+  var conditions = [];
+  words.forEach(function(w) {
+    var fieldCondition = [];
+    searchField.forEach(function(field) {
+      var condition = {};
+      condition[field] = new RegExp(w);
+      fieldCondition.push(condition);
+    });
+    conditions.push({
+      '$or': fieldCondition
+    });
+  });
+
   model.program
   .find({
-    '$or':[
-      {'title':regexp},
-      {'detail':regexp},
-      {'categoryL':regexp}
-    ]
+    '$and': conditions
   })
   .sort({start:1})
   .exec(function(err, programs) {
