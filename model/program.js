@@ -27,7 +27,7 @@ exports.search = function(word, callback) {
     var fieldCondition = [];
     searchField.forEach(function(field) {
       var condition = {};
-      condition[field] = new RegExp(w);
+      condition[field] = new RegExp(w, "i");
       fieldCondition.push(condition);
     });
     conditions.push({
