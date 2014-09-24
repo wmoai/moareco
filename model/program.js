@@ -26,6 +26,11 @@ exports.search = function(word, callback) {
     'categoryL'
   ];
   var conditions = [];
+  conditions.push({
+    'start':{
+      '$gte': (new Date().getTime())
+    }
+  });
   words.forEach(function(w) {
     var fieldCondition = [];
     searchField.forEach(function(field) {
