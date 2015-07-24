@@ -3,7 +3,7 @@ var log4js = require('log4js');
 log4js.configure({
   appenders : [
     {
-      "type" : "file",
+      "type" : "dateFile",
       "category" : "backend",
       "filename" : "log/backend.log",
       "pattern" : "-yyyy-mm-dd"
