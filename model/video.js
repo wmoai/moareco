@@ -67,6 +67,7 @@ var encoder = {
           '-c:a', 'libfaac',
           '-fpre', '/usr/local/share/ffmpeg/libx264-hq-ts.ffpreset',
           '-deinterlace',
+          '-vol', '356',
           '-async', '1',
           '-f', 'mp4',
           mp4

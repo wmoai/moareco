@@ -1,7 +1,12 @@
 extends ../layout
 
 block title
-  title videos
+  title #{titleBase} - ビデオ
+
+block scripts
+  link(rel='stylesheet', href='/alertify.js/themes/alertify.core.css')
+  link(rel='stylesheet', href='/alertify.js/themes/alertify.default.css')
+  script(src='/alertify.js/lib/alertify.min.js')
 
 block content
   #container
@@ -25,5 +30,6 @@ block content
                 input(type="submit",value="x")
             else
               span(style="color:red") 削除されます
+        div 全て削除
 
 

@@ -1,0 +1,19 @@
+
+var Programs = React.createClass({displayName: "Programs",
+  render: function() {
+    return (
+      React.createElement("div", {id: "programs"}, 
+        "hello"
+      )
+    );
+  }
+});
+
+
+
+window.onload = function() {
+  React.render(
+    React.createElement("div", null, "hello"),
+    document.getElementById('container')
+  );
+}

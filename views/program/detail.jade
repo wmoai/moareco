@@ -5,7 +5,8 @@ block title
 
 block content
   #container
-    h1= data.title
+    h1
+      a(href="https://www.google.co.jp/search?q=#{data.title}",target="blank")= data.title
     h2= data.date
     h3= data.detail
     if data.reserved

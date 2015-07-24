@@ -12,8 +12,7 @@ var chs = [
   21,
   24,
   23,
-  16,
-  32
+  16
 ];
 
 function saveEpg(epg, ch) {

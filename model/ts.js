@@ -1,7 +1,7 @@
 var exec = require('child_process').exec
   , crypto = require('crypto')
   , fs = require('fs')
-  , tunerCount = 2
+  , tunerCount = 4
   , recodingCount = 0
   , logger = require('../logger')
 ;
