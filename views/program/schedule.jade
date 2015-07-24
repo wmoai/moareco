@@ -1,0 +1,16 @@
+extends ../layout
+
+block title
+  title #{titleBase}
+
+block scripts
+  script(src='/momentjs/moment.js')
+  script(src='/react/react.js')
+  script(src='/js/dest/program.js')
+
+block content
+  #sids
+    for service, index in services
+      input(type="hidden",value=service.id)
+  #container
+

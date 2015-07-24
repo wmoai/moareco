@@ -1,12 +1,27 @@
 $(function() {
   var frameSkip;
   var cursorStop;
-  var video = $('#video')[0];
-  video.play();
+  var video = document.querySelector('#video');
+
+  function videoResize() {
+    var uw = window.innerWidth / 16;
+    var uh = window.innerHeight / 9;
+    var u = (uw < uh) ? uw : uh;
+    $('#video').width(u*16);
+    $('#video').height(u*9);
+  };
+  videoResize();
+
+  $(window).on('resize',function() {
+    videoResize();
+  }).trigger('resize');
 
   $('#video')
   .on('mouseover', function() {
     $(this).attr('controls', '');
+  })
+  .on('loadeddata', function() {
+    video.play();
   })
   .on('mouseleave', function() {
     $(this).removeAttr('controls');

@@ -19,6 +19,7 @@
   ],
   "dependencies": {
     "momentjs": "~2.5.1",
-    "jquery": "~2.1.0"
+    "jquery": "~2.1.0",
+    "react": "~0.13.1"
   }
 }

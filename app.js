@@ -14,7 +14,8 @@ app.configure(function(){
 
 app.listen(3000);
 
-app.get('/', routes.program.table);
+app.get('/', routes.program.schedule);
+app.get('/test', routes.program.table);
 
 app.post('/program/reserve/:id', routes.program.reserve);
 app.post('/program/reserve/cancel/:id', routes.program.cancelReserve);
@@ -31,5 +32,4 @@ app.post('/video/delete/:id', routes.video.delete);
 app.post('/video/delete/cancel/:id', routes.video.cancelDelete);
 app.get('/video/:id', routes.video.screen);
 app.get('/video', routes.video.list);
-
 

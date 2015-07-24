@@ -11,6 +11,12 @@ exports.table = function(req, res) {
     res.render('program/table', { services: services});
   });
 }
+exports.schedule = function(req, res) {
+  orm.service
+  .find({}, function(err, services) {
+    res.render('program/schedule', { services: services});
+  });
+}
 
 exports.detail = function(req, res){
   orm.program
@@ -83,16 +89,16 @@ exports.serviceList = function(req, res) {
   var condition = {};
   condition.sid = req.query.sid;
   condition.$or = [];
-  condition.$or.push({
-    start: {
-      '$gte' : parseInt(req.query.start),
-      '$lt' : parseInt(req.query.end)
-    }
-  });
+  // condition.$or.push({
+    // start: {
+      // '$gte' : parseInt(req.query.start),
+      // '$lt' : parseInt(req.query.end)
+    // }
+  // });
   condition.$or.push({
     end: {
-      '$gte' : parseInt(req.query.start),
-      '$lt' : parseInt(req.query.end)
+      '$gt' : parseInt(req.query.start),
+      '$lte' : parseInt(req.query.end)
     }
   });
 
