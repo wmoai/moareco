@@ -47,13 +47,8 @@ var encoder = {
     var tsPath = _getTSPath(video.sid, video.eid, video.month);
     if (!fs.existsSync(tsPath)) {
       logger.backend.warn('encode : ts not found ' + video._id);
-      model.video
-      .update({
-        _id: video._id
-      }, {garbage: true})
-      .exec(function(err) {
-        self._encode();
-      });
+      video.remove();
+      self._encode();
     } else {
       var mp4 = _getMP4Path(video.sid, video.eid, video.month);
       if (fs.existsSync(mp4)) {
@@ -104,8 +99,7 @@ exports.encode = function() {
   logger.backend.info('start encode job');
   model.video
   .find({
-    encoded: {$ne: true},
-    notfound: {$ne: true}
+    encoded: {$ne: true}
   })
   .exec(function(err, videos) {
     encoder.run(videos);
