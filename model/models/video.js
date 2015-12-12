@@ -17,8 +17,7 @@ var Video = new Schema({
   tags : [String],
   encoded : Boolean,
   missingTs : Boolean,
-  deleted : Boolean,
-  notfound : Boolean
+  deleted : Boolean
 });
 
 module.exports = mongoose.model('video', Video);

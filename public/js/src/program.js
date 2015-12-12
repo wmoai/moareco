@@ -78,6 +78,7 @@ var Channel = React.createClass({
           };
           return <Program program={program} style={style} />
         })}
+        <span>&nbsp;</span>
       </div>
     );
   }
@@ -199,7 +200,7 @@ var Programs = React.createClass({
 window.onload = function() {
   var sids = [];
   Array.prototype.forEach.call(document.querySelectorAll('#sids > input'), function(input) {
-    sids.push(input.value);
+    sids.push(parseInt(input.value));
   });
   var now = new Date().getTime();
   React.render(

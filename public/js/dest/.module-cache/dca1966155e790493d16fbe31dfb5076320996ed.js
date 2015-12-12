@@ -77,8 +77,7 @@ var Channel = React.createClass({displayName: "Channel",
             zIndex: count++ 
           };
           return React.createElement(Program, {program: program, style: style})
-        }), 
-        React.createElement("span", null, " ")
+        })
       )
     );
   }

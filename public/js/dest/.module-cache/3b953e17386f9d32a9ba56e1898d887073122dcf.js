@@ -76,9 +76,9 @@ var Channel = React.createClass({displayName: "Channel",
             top: (program.start - self.props.startTime) / (60 * 1000) * self.props.pxpm,
             zIndex: count++ 
           };
+            console.log(program.duration / (60 * 1000) * self.props.pxpm);
           return React.createElement(Program, {program: program, style: style})
-        }), 
-        React.createElement("span", null, " ")
+        })
       )
     );
   }
