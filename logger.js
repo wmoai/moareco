@@ -6,13 +6,13 @@ log4js.configure({
       "type" : "dateFile",
       "category" : "backend",
       "filename" : "log/backend.log",
-      "pattern" : "-yyyy-mm-dd"
+      "pattern" : "-yyyy-MM-dd"
     },
     {
       "type" : "file",
       "category" : "web",
       "filename" : "log/web.log",
-      "pattern" : "-yyyy-mm-dd"
+      "pattern" : "-yyyy-MM-dd"
     }
   ]
 });

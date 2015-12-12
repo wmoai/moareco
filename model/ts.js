@@ -32,7 +32,7 @@ var getEpg = function(phch, callback) {
   var duration = 30000;
   record(phch, duration, tsPath, function(error) {
     if (error) {
-      logger.backend.error('epgdump error : recording failure');
+      logger.backend.error('epgdump error : recording failure ' + phch + 'ch');
       callback(error);
       return;
     }
