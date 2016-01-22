@@ -30,6 +30,11 @@ block content
                 input(type="submit",value="x")
             else
               span(style="color:red") 削除されます
-        div 全て削除
+        if listDeletable
+          form#delete-list(method="POST", action="/video/tag/#{selected}/delete")
+            for video, index in videos
+              if !video.deleted
+                input(type="hidden" name="ids[]" value="#{video._id}")
+            input(type="submit" value="全て削除")
 
 

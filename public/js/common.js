@@ -24,4 +24,21 @@ $(function() {
     }
   });
 
+  $('#delete-list').on('submit', function() {
+    var confirm = '_confirm';
+    var form = $(this);
+    if (form.hasClass(confirm)) {
+      return true;
+    } else {
+      var message = 'この一覧の全ビデオを削除予約します';
+      alertify.confirm(message, function (e) {
+        if (e) {
+          form
+          .addClass(confirm)
+          .trigger('submit');
+        }
+      });
+      return false;
+    }
+  });
 });
