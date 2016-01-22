@@ -30,6 +30,7 @@ app.get('/video/tag/:tag', routes.video.tagList);
 app.get('/video/delete', routes.video.deleteList);
 app.post('/video/delete/:id', routes.video.delete);
 app.post('/video/delete/cancel/:id', routes.video.cancelDelete);
+app.post('/video/tag/:tag/delete', routes.video.deleteAll);
 app.get('/video/:id', routes.video.screen);
 app.get('/video', routes.video.list);
 

@@ -19,6 +19,7 @@ exports.tagList = function(req, res) {
         videos: videos
       , tags: tags
       , selected: req.params.tag
+      , listDeletable: true
       });
     });
   });
@@ -35,6 +36,15 @@ exports.screen = function(req, res) {
 
 exports.delete = function(req, res) {
   model.video.reserveDelete(req.params.id);
+  res.redirect(req.get('referer'));
+}
+exports.deleteAll = function(req, res) {
+  var ids = req.body.ids;
+  if (ids) {
+    ids.forEach(function(id) {
+      model.video.reserveDelete(id);
+    });
+  }
   res.redirect(req.get('referer'));
 }
 exports.cancelDelete = function(req, res) {

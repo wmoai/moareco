@@ -200,6 +200,21 @@ section {
 #list .deleteVideo input {
   cursor: pointer;
 }
+#delete-list {
+  text-align: right;
+  margin: 20px 0;
+}
+#delete-list input {
+  padding: 3px 5px;
+  font-weight: bold;
+  border: solid 1px red;
+  background-color: white;
+  color: red!important;
+}
+#delete-list input:hover {
+  background-color: red;
+  color: white!important;
+}
 
 #remark {
   margin-left: 30px;
