@@ -4,15 +4,14 @@
   "description": "wmoai's record server",
   "main": "app.js",
   "dependencies": {
-    "cron": "~1.0.3",
-    "express": "~3.4.8",
-    "mongoose": "~3.8.8",
-    "jade": "~1.1.5",
-    "time": "~0.10.0",
-    "moment": "~2.5.1",
-    "config": "~0.4.35",
-    "synchronize": "~0.7.0",
-    "log4js": "~0.6.15"
+    "body-parser": "^1.15.2",
+    "cron": "^1.1.0",
+    "express": "^4.14.0",
+    "jade": "^1.11.0",
+    "log4js": "^0.6.38",
+    "moment": "^2.14.1",
+    "mongoose": "^4.5.9",
+    "synchronize": "^0.9.15"
   },
   "devDependencies": {},
   "scripts": {
